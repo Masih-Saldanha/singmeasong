@@ -9,7 +9,7 @@ beforeEach(async () => {
     `
 });
 
-describe("Recommendations tests", () => {
+describe("Recommendations tests - Success cases", () => {
     it("Add a recommendation", async () => {
         const recommendation = appFactory.createRecommendation();
         const response = await supertest(app).post("/recommendations").send(recommendation);
@@ -78,6 +78,22 @@ describe("Recommendations tests", () => {
 
         expect(response.body.length).toBe(10);
         expect(response.body).toStrictEqual(findRecommendations);
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("Get a single recommendation", async () => {
+        const recommendation = appFactory.createRecommendation();
+        await supertest(app).post("/recommendations").send(recommendation);
+        const findRecommendation = await prisma.recommendation.findUnique({
+            where: {
+                name: recommendation.name,
+            }
+        });
+        const id = String(findRecommendation.id);
+
+        const response = await supertest(app).get(`/recommendations/${id}`);
+
+        expect(response.body).toStrictEqual(findRecommendation);
         expect(response.statusCode).toBe(200);
     });
 });
