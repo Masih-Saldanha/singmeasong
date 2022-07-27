@@ -66,6 +66,20 @@ describe("Recommendations tests", () => {
         expect(findRecommendationAfterDownvote.score).toBe(-1);
         expect(response.statusCode).toBe(200);
     });
+
+    it("Get a list of 10 recommendations", async () => {
+        const amount = 15;
+        for (let i = 0; i < amount; i++) {
+            const recommendation = appFactory.createRecommendation();
+            await supertest(app).post("/recommendations").send(recommendation);
+        };
+        const response = await supertest(app).get("/recommendations");
+        const findRecommendations = await prisma.recommendation.findMany({ take: 10, orderBy: { id: 'desc' } });
+
+        expect(response.body.length).toBe(10);
+        expect(response.body).toStrictEqual(findRecommendations);
+        expect(response.statusCode).toBe(200);
+    });
 });
 
 afterAll(async () => {

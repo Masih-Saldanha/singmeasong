@@ -7,8 +7,17 @@ function createRecommendation() {
     };
 };
 
+// function createMoreRecommendations(amount: number) {
+//     const arr = [];
+//     for (let i = 0; i < amount; i++) {
+//         arr.push(createRecommendation);
+//     };
+//     return arr;
+// };
+
 const appFactory = {
     createRecommendation,
+    // createMoreRecommendations,
 };
 
 export default appFactory;
