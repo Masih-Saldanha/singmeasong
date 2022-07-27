@@ -10,9 +10,8 @@ beforeEach(async () => {
 });
 
 describe("Recommendations tests", () => {
-    it("Add a Recommendation", async () => {
+    it("Add a recommendation", async () => {
         const recommendation = appFactory.createRecommendation();
-
         const response = await supertest(app).post("/recommendations").send(recommendation);
 
         const findRecommendation = await prisma.recommendation.findUnique({
@@ -24,6 +23,48 @@ describe("Recommendations tests", () => {
         expect(recommendation.name).toBe(findRecommendation.name);
         expect(recommendation.youtubeLink).toBe(findRecommendation.youtubeLink);
         expect(response.statusCode).toBe(201);
+    });
+
+    it("Upvote a recommendation one time", async () => {
+        const recommendation = appFactory.createRecommendation();
+        await supertest(app).post("/recommendations").send(recommendation);
+        const findRecommendation = await prisma.recommendation.findUnique({
+            where: {
+                name: recommendation.name,
+            }
+        });
+        const id = String(findRecommendation.id);
+
+        const response = await supertest(app).post(`/recommendations/${id}/upvote`);
+        const findRecommendationAfterUpvote = await prisma.recommendation.findUnique({
+            where: {
+                name: recommendation.name,
+            }
+        });
+
+        expect(findRecommendationAfterUpvote.score).toBe(1);
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("Downvote a recommendation one time", async () => {
+        const recommendation = appFactory.createRecommendation();
+        await supertest(app).post("/recommendations").send(recommendation);
+        const findRecommendation = await prisma.recommendation.findUnique({
+            where: {
+                name: recommendation.name,
+            }
+        });
+        const id = String(findRecommendation.id);
+
+        const response = await supertest(app).post(`/recommendations/${id}/downvote`);
+        const findRecommendationAfterDownvote = await prisma.recommendation.findUnique({
+            where: {
+                name: recommendation.name,
+            }
+        });
+
+        expect(findRecommendationAfterDownvote.score).toBe(-1);
+        expect(response.statusCode).toBe(200);
     });
 });
 
