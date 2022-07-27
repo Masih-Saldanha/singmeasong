@@ -27,7 +27,7 @@ describe("Recommendations tests - Success cases", () => {
 
     it("Upvote a recommendation one time", async () => {
         const recommendation = appFactory.createRecommendation();
-        await supertest(app).post("/recommendations").send(recommendation);
+        await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
                 name: recommendation.name,
@@ -48,7 +48,7 @@ describe("Recommendations tests - Success cases", () => {
 
     it("Downvote a recommendation one time", async () => {
         const recommendation = appFactory.createRecommendation();
-        await supertest(app).post("/recommendations").send(recommendation);
+        await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
                 name: recommendation.name,
@@ -67,23 +67,9 @@ describe("Recommendations tests - Success cases", () => {
         expect(response.statusCode).toBe(200);
     });
 
-    it("Get a list of 10 recommendations", async () => {
-        const amount = 15;
-        for (let i = 0; i < amount; i++) {
-            const recommendation = appFactory.createRecommendation();
-            await supertest(app).post("/recommendations").send(recommendation);
-        };
-        const response = await supertest(app).get("/recommendations");
-        const findRecommendations = await prisma.recommendation.findMany({ take: 10, orderBy: { id: 'desc' } });
-
-        expect(response.body.length).toBe(10);
-        expect(response.body).toStrictEqual(findRecommendations);
-        expect(response.statusCode).toBe(200);
-    });
-
     it("Get a single recommendation", async () => {
         const recommendation = appFactory.createRecommendation();
-        await supertest(app).post("/recommendations").send(recommendation);
+        await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
                 name: recommendation.name,
@@ -94,6 +80,45 @@ describe("Recommendations tests - Success cases", () => {
         const response = await supertest(app).get(`/recommendations/${id}`);
 
         expect(response.body).toStrictEqual(findRecommendation);
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("Get a list of 10 recommendations", async () => {
+        const amount = appFactory.randomAmount(10, 10);
+        const take = 10;
+        for (let i = 0; i < amount; i++) {
+            const recommendation = appFactory.createRecommendation();
+            await prisma.recommendation.create({ data: recommendation });
+        };
+        const response = await supertest(app).get("/recommendations");
+        const findRecommendations = await prisma.recommendation.findMany({ take, orderBy: { id: 'desc' } });
+
+        expect(response.body.length).toBe(take);
+        expect(response.body).toStrictEqual(findRecommendations);
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("Get a list of top {amount} of recommendations", async () => {
+        const amountOfRecommendations = 15;
+        for (let i = 0; i < amountOfRecommendations; i++) {
+            const max = 100;
+            const randomAmount = appFactory.randomAmount(0, max);
+            const recommendation = appFactory.createRecommendation();
+            await prisma.recommendation.create({ data: recommendation });
+            await prisma.recommendation.update({
+                where: { name: recommendation.name },
+                data: {
+                    score: { increment: randomAmount },
+                },
+            });
+        };
+
+        const amount = 10;
+        const response = await supertest(app).get(`/recommendations/top/${amount}`);
+        const findRecommendations = await prisma.recommendation.findMany({ take: amount, orderBy: { score: 'desc' } });
+
+        expect(response.body.length).toBe(amount);
+        expect(response.body).toStrictEqual(findRecommendations);
         expect(response.statusCode).toBe(200);
     });
 });

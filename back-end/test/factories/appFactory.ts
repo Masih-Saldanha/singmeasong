@@ -7,17 +7,13 @@ function createRecommendation() {
     };
 };
 
-// function createMoreRecommendations(amount: number) {
-//     const arr = [];
-//     for (let i = 0; i < amount; i++) {
-//         arr.push(createRecommendation);
-//     };
-//     return arr;
-// };
+function randomAmount(min: number, max: number) {
+    return Math.floor(Math.random() * max) + min;
+}
 
 const appFactory = {
     createRecommendation,
-    // createMoreRecommendations,
+    randomAmount
 };
 
 export default appFactory;
