@@ -11,9 +11,9 @@ function randomAmount(min: number, max: number) {
     return Math.floor(Math.random() * max) + min;
 }
 
-const appFactory = {
+const recommendationsFactory = {
     createRecommendation,
     randomAmount
 };
 
-export default appFactory;
+export default recommendationsFactory;

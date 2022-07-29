@@ -1,9 +1,12 @@
 import supertest from "supertest";
-import app from "../src/app.js";
-import { prisma } from "../src/database.js";
-import appFactory from "./factories/appFactory.js";
+import app from "../../src/app.js";
+import { prisma } from "../../src/database.js";
+import recommendationsFactory from "../factories/recommendationsFactory.js";
 
 beforeEach(async () => {
+    await prisma.$executeRaw`
+        ALTER SEQUENCE recommendations_id_seq RESTART WITH 1
+    `
     await prisma.$executeRaw`
         TRUNCATE TABLE recommendations
     `
@@ -11,7 +14,7 @@ beforeEach(async () => {
 
 describe("Recommendations tests - Success cases", () => {
     it("Add a recommendation", async () => {
-        const recommendation = appFactory.createRecommendation();
+        const recommendation = recommendationsFactory.createRecommendation();
         const response = await supertest(app).post("/recommendations").send(recommendation);
 
         const findRecommendation = await prisma.recommendation.findUnique({
@@ -26,7 +29,7 @@ describe("Recommendations tests - Success cases", () => {
     });
 
     it("Upvote a recommendation one time", async () => {
-        const recommendation = appFactory.createRecommendation();
+        const recommendation = recommendationsFactory.createRecommendation();
         await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
@@ -47,7 +50,7 @@ describe("Recommendations tests - Success cases", () => {
     });
 
     it("Downvote a recommendation one time", async () => {
-        const recommendation = appFactory.createRecommendation();
+        const recommendation = recommendationsFactory.createRecommendation();
         await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
@@ -68,7 +71,7 @@ describe("Recommendations tests - Success cases", () => {
     });
 
     it("Get a single recommendation", async () => {
-        const recommendation = appFactory.createRecommendation();
+        const recommendation = recommendationsFactory.createRecommendation();
         await prisma.recommendation.create({ data: recommendation });
         const findRecommendation = await prisma.recommendation.findUnique({
             where: {
@@ -84,10 +87,10 @@ describe("Recommendations tests - Success cases", () => {
     });
 
     it("Get a list of 10 recommendations", async () => {
-        const amount = appFactory.randomAmount(10, 10);
+        const amount = recommendationsFactory.randomAmount(10, 10);
         const take = 10;
         for (let i = 0; i < amount; i++) {
-            const recommendation = appFactory.createRecommendation();
+            const recommendation = recommendationsFactory.createRecommendation();
             await prisma.recommendation.create({ data: recommendation });
         };
         const response = await supertest(app).get("/recommendations");
@@ -102,8 +105,8 @@ describe("Recommendations tests - Success cases", () => {
         const amountOfRecommendations = 15;
         for (let i = 0; i < amountOfRecommendations; i++) {
             const max = 100;
-            const randomAmount = appFactory.randomAmount(0, max);
-            const recommendation = appFactory.createRecommendation();
+            const randomAmount = recommendationsFactory.randomAmount(0, max);
+            const recommendation = recommendationsFactory.createRecommendation();
             await prisma.recommendation.create({ data: recommendation });
             await prisma.recommendation.update({
                 where: { name: recommendation.name },
@@ -121,6 +124,8 @@ describe("Recommendations tests - Success cases", () => {
         expect(response.body).toStrictEqual(findRecommendations);
         expect(response.statusCode).toBe(200);
     });
+
+    // TODO: CRIAR TESTE DA ROTA RANDOM
 });
 
 afterAll(async () => {

@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest -i"
+    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest -i -- --coverage",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest -i -- --coverage --testPathPattern=tests/unit",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest -i -- --coverage --testPathPattern=tests/integration"
   },
   "keywords": [],
   "author": "",
