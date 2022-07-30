@@ -1,6 +1,10 @@
 import supertest from "supertest";
+import { faker } from "@faker-js/faker";
+import { jest } from "@jest/globals";
+
 import app from "../../src/app.js";
 import { prisma } from "../../src/database.js";
+import { recommendationSchema } from "../../src/schemas/recommendationsSchemas.js";
 import recommendationsFactory from "../factories/recommendationsFactory.js";
 
 beforeEach(async () => {
@@ -12,7 +16,7 @@ beforeEach(async () => {
     `
 });
 
-describe("Recommendations tests - Success cases", () => {
+describe("Recommendations tests - Integration", () => {
     it("Add a recommendation", async () => {
         const recommendation = recommendationsFactory.createRecommendation();
         const response = await supertest(app).post("/recommendations").send(recommendation);
@@ -26,6 +30,14 @@ describe("Recommendations tests - Success cases", () => {
         expect(recommendation.name).toBe(findRecommendation.name);
         expect(recommendation.youtubeLink).toBe(findRecommendation.youtubeLink);
         expect(response.statusCode).toBe(201);
+    });
+
+    it("Don't add a recommendation due a wrong schema error", async () => {
+        const wrongSchema = {};
+
+        const response = await supertest(app).post("/recommendations").send(wrongSchema);
+
+        expect(response.statusCode).toBe(422);
     });
 
     it("Upvote a recommendation one time", async () => {
@@ -87,7 +99,9 @@ describe("Recommendations tests - Success cases", () => {
     });
 
     it("Get a list of 10 recommendations", async () => {
-        const amount = recommendationsFactory.randomAmount(10, 10);
+        const min = 10;
+        const max = 20;
+        const amount = recommendationsFactory.randomAmount(min, max);
         const take = 10;
         for (let i = 0; i < amount; i++) {
             const recommendation = recommendationsFactory.createRecommendation();
@@ -104,8 +118,9 @@ describe("Recommendations tests - Success cases", () => {
     it("Get a list of top {amount} of recommendations", async () => {
         const amountOfRecommendations = 15;
         for (let i = 0; i < amountOfRecommendations; i++) {
+            const min = 0
             const max = 100;
-            const randomAmount = recommendationsFactory.randomAmount(0, max);
+            const randomAmount = recommendationsFactory.randomAmount(min, max);
             const recommendation = recommendationsFactory.createRecommendation();
             await prisma.recommendation.create({ data: recommendation });
             await prisma.recommendation.update({
@@ -125,7 +140,42 @@ describe("Recommendations tests - Success cases", () => {
         expect(response.statusCode).toBe(200);
     });
 
-    // TODO: CRIAR TESTE DA ROTA RANDOM
+    it("Get a random recommendation (70% scenario)", async () => {
+        const minLength = 10;
+        const maxLength = 20;
+        const arrsLength = recommendationsFactory.randomAmount(minLength, maxLength);
+        const minLow = -5;
+        const maxLow = 10;
+        const lowScore = recommendationsFactory.randomAmount(minLow, maxLow);
+        const minHigh = 11;
+        const maxHigh = 20;
+        const highScore = recommendationsFactory.randomAmount(minHigh, maxHigh);
+        const arrLowScore = [];
+        const arrHighScore = [];
+        for (let i = 0; i < arrsLength; i++) {
+            arrLowScore.push({
+                name: faker.name.findName(),
+                youtubeLink: "https://youtu.be/1bFz-SVX98g",
+                score: lowScore,
+            });
+            arrHighScore.push({
+                name: faker.name.findName(),
+                youtubeLink: "https://youtu.be/1bFz-SVX98g",
+                score: highScore,
+            });
+        };
+        const arr = arrLowScore.concat(arrHighScore);
+        await prisma.recommendation.createMany({ data: arr });
+
+        const chance = 0.3;
+        jest.spyOn(Math, "random")
+            .mockImplementationOnce((): any => chance);
+
+        const response = await supertest(app).get("/recommendations/random")
+
+        expect(response.body.score).toBeGreaterThan(10);
+        expect(response.statusCode).toBe(200);
+    });
 });
 
 afterAll(async () => {
