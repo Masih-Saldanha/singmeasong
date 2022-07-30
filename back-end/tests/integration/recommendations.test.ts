@@ -176,6 +176,81 @@ describe("Recommendations tests - Integration", () => {
         expect(response.body.score).toBeGreaterThan(10);
         expect(response.statusCode).toBe(200);
     });
+
+    it("Get a random recommendation (30% scenario)", async () => {
+        const minLength = 10;
+        const maxLength = 20;
+        const arrsLength = recommendationsFactory.randomAmount(minLength, maxLength);
+        const minLow = -5;
+        const maxLow = 10;
+        const lowScore = recommendationsFactory.randomAmount(minLow, maxLow);
+        const minHigh = 11;
+        const maxHigh = 20;
+        const highScore = recommendationsFactory.randomAmount(minHigh, maxHigh);
+        const arrLowScore = [];
+        const arrHighScore = [];
+        for (let i = 0; i < arrsLength; i++) {
+            arrLowScore.push({
+                name: faker.name.findName(),
+                youtubeLink: "https://youtu.be/1bFz-SVX98g",
+                score: lowScore,
+            });
+            arrHighScore.push({
+                name: faker.name.findName(),
+                youtubeLink: "https://youtu.be/1bFz-SVX98g",
+                score: highScore,
+            });
+        };
+        const arr = arrLowScore.concat(arrHighScore);
+        await prisma.recommendation.createMany({ data: arr });
+
+        const chance = 0.7;
+        jest.spyOn(Math, "random")
+            .mockImplementationOnce((): any => chance);
+
+        const response = await supertest(app).get("/recommendations/random");
+
+        expect(response.body.score).toBeLessThanOrEqual(10);
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("Throw error on a getRandom requisition without a recommendation registered", async () => {
+        const response = await supertest(app).get("/recommendations/random");
+
+        expect(response.statusCode).toBe(404);
+    });
+
+    it("Delete an recommendation due a -6 score through downvote", async () => {
+        const score = -5;
+        const recommendation = recommendationsFactory.createRecommendation();
+        const data = { ...recommendation, score };
+
+        const createdRecommendation = await prisma.recommendation.create({ data });
+        const id = String(createdRecommendation.id);
+
+        await supertest(app).post(`/recommendations/${id}/downvote`);
+
+        const findRecommendation = await prisma.recommendation.findUnique({ where: { id: createdRecommendation.id } });
+
+        expect(findRecommendation).toBeNull();
+    });
+
+    it("Throw not found error due not finding an pre-created recommendation on a upvote requisition", async () => {
+        const id = "0";
+        const response = await supertest(app).post(`/recommendations/${id}/upvote`);
+
+        expect(response.statusCode).toBe(404);
+    });
+
+    it("Throw conflict error due triyng to add a repeated recommendation name", async () => {
+        const recommendation = recommendationsFactory.createRecommendation();
+
+        await prisma.recommendation.create({ data: recommendation });
+        
+        const response = await supertest(app).post("/recommendations").send(recommendation);
+
+        expect(response.statusCode).toBe(409);
+    });
 });
 
 afterAll(async () => {
