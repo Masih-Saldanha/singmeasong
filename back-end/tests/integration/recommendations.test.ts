@@ -246,7 +246,7 @@ describe("Recommendations tests - Integration", () => {
         const recommendation = recommendationsFactory.createRecommendation();
 
         await prisma.recommendation.create({ data: recommendation });
-        
+
         const response = await supertest(app).post("/recommendations").send(recommendation);
 
         expect(response.statusCode).toBe(409);
@@ -254,5 +254,11 @@ describe("Recommendations tests - Integration", () => {
 });
 
 afterAll(async () => {
+    await prisma.$executeRaw`
+        ALTER SEQUENCE recommendations_id_seq RESTART WITH 1
+    `
+    await prisma.$executeRaw`
+        TRUNCATE TABLE recommendations
+    `
     await prisma.$disconnect();
 });
