@@ -10,6 +10,10 @@ Cypress.Commands.add("seedDB", () => {
     });
 });
 
+Cypress.Commands.add("seedDBWithoutReset", () => {
+    cy.request("POST", `${recommendationFactory.URL_BACK}/seed`).then(() => { });
+});
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
