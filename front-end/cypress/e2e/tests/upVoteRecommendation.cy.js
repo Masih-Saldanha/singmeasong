@@ -1,18 +1,19 @@
 /// <reference types="cypress" />
 
-const URL_FRONT = "http://localhost:3000";
-const URL_BACK = "http://localhost:5000";
+import recommendationFactory from "../../../factories/recommendationFactory.js";
 
 describe("Home Screen", () => {
     it("Should upvote an recommendation", async () => {
-        const staticResponse = {};
+        cy.seedDB();
 
-        cy.intercept("GET", `${URL_BACK}/recommendations`)
-            .as("getRecommendations");
-        cy.visit(URL_FRONT);
+        cy.intercept("GET", `${recommendationFactory.URL_BACK}`).as("getRecommendations");
+        cy.visit(recommendationFactory.URL_FRONT);
         cy.wait("@getRecommendations");
-        cy.log("@getRecommendations")
 
+        cy.intercept("POST", `${recommendationFactory.URL_BACK}/1/upvote`).as("upVote");
         cy.get("article div svg:first").click();
+        cy.wait("@upVote");
+
+        cy.get("article div").should("contain.text", 1);
     });
 });
