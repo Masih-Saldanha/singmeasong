@@ -5,7 +5,7 @@ import recommendationFactory from "../../../factories/recommendationFactory.js";
 describe("Home Screen", () => {
     it("Should upvote an recommendation", async () => {
         cy.resetDB();
-        const max = 4;
+        const max = 3;
         for (let i = 0; i < max; i++) {
             cy.seedDBWithoutReset();
         };
