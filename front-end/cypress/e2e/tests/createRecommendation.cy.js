@@ -6,9 +6,8 @@ const URL_FRONT = "http://localhost:3000";
 const URL_BACK = "http://localhost:5000";
 describe("Home Screen", () => {
     it("Should add an recommendation", async () => {
-        cy.visit(URL_FRONT);
-        
         cy.intercept("GET", `${URL_BACK}/recommendations`).as("getRecommendations");
+        cy.visit(URL_FRONT);
         cy.wait("@getRecommendations");
 
         const name = faker.name.findName();
@@ -24,4 +23,24 @@ describe("Home Screen", () => {
 
         cy.get("article div:first").should("contain.text", name);
     });
+
+    // it("Should upvote an recommendation", async () => {
+    //     cy.visit(URL_FRONT);
+        
+    //     cy.intercept("GET", `${URL_BACK}/recommendations`).as("getRecommendations");
+    //     cy.wait("@getRecommendations");
+
+    //     cy.get("article div svg:first")
+    // });
 });
+
+// describe("Home Screen 2", () => {
+//     it("Should upvote an recommendation", async () => {
+//         cy.visit(URL_FRONT);
+        
+//         cy.intercept("GET", `${URL_BACK}/recommendations`).as("getRecommendations");
+//         cy.wait("@getRecommendations");
+
+//         cy.get("article div svg:first")
+//     });
+// });
