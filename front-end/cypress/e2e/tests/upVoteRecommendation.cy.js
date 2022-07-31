@@ -14,6 +14,6 @@ describe("Home Screen", () => {
         cy.get("article div svg:first").click();
         cy.wait("@upVote");
 
-        cy.get("article div").should("contain.text", 1);
+        cy.get("article div").eq(4).should("contain.text", 1);
     });
 });
