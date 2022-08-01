@@ -1,16 +1,17 @@
-import useRecommendation from "../../../hooks/api/useRecommendation";
+/* eslint-disable react/react-in-jsx-scope */
+import useRecommendation from '../../../hooks/api/useRecommendation'
 
-import Recommendation from "../../../components/Recommendation";
+import Recommendation from '../../../components/Recommendation'
 
-export default function Random() {
-  const { recommendation, updateRecommendation } = useRecommendation();
+export default function Random () {
+  const { recommendation, updateRecommendation } = useRecommendation()
 
   const handleUpdate = () => {
-    updateRecommendation(recommendation.id);
+    updateRecommendation(recommendation.id)
   }
 
   if (!recommendation) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
@@ -19,5 +20,5 @@ export default function Random() {
       onUpvote={handleUpdate}
       onDownvote={handleUpdate}
     />
-  );
+  )
 }

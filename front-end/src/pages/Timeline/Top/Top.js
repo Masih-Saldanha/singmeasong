@@ -1,12 +1,13 @@
-import useTopRecommendations from "../../../hooks/api/useTopRecommendations";
+/* eslint-disable react/react-in-jsx-scope */
+import useTopRecommendations from '../../../hooks/api/useTopRecommendations'
 
-import Recommendation from "../../../components/Recommendation";
+import Recommendation from '../../../components/Recommendation'
 
-export default function Home() {
-  const { recommendations, loadingRecommendations, listRecommendations } = useTopRecommendations();
+export default function Home () {
+  const { recommendations, loadingRecommendations, listRecommendations } = useTopRecommendations()
 
   if ((loadingRecommendations && !recommendations) || !recommendations) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (

@@ -1,38 +1,39 @@
-import styled from "styled-components";
-import { useEffect } from "react";
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/prop-types */
+import styled from 'styled-components'
+import { useEffect } from 'react'
 
-import ReactPlayer from "react-player";
-import { GoArrowUp, GoArrowDown } from "react-icons/go";
+import ReactPlayer from 'react-player'
+import { GoArrowUp, GoArrowDown } from 'react-icons/go'
 
-import useUpvoteRecommendation from "../../hooks/api/useUpvoteRecommendation";
-import useDownvoteRecommendation from "../../hooks/api/useDownvoteRecommendation";
+import useUpvoteRecommendation from '../../hooks/api/useUpvoteRecommendation'
+import useDownvoteRecommendation from '../../hooks/api/useDownvoteRecommendation'
 
-export default function Recommendation({ name, youtubeLink, score, id, onUpvote = () => 0, onDownvote = () => 0 }) {
-  const { upvoteRecommendation, errorUpvotingRecommendation } = useUpvoteRecommendation();
-  const { downvoteRecommendation, errorDownvotingRecommendation } = useDownvoteRecommendation();
+export default function Recommendation ({ name, youtubeLink, score, id, onUpvote = () => 0, onDownvote = () => 0 }) {
+  const { upvoteRecommendation, errorUpvotingRecommendation } = useUpvoteRecommendation()
+  const { downvoteRecommendation, errorDownvotingRecommendation } = useDownvoteRecommendation()
 
   const handleUpvote = async () => {
-    await upvoteRecommendation(id);
-    onUpvote();
-  };
+    await upvoteRecommendation(id)
+    onUpvote()
+  }
 
   const handleDownvote = async () => {
-    await downvoteRecommendation(id);
-    onDownvote();
-  };
+    await downvoteRecommendation(id)
+    onDownvote()
+  }
 
   useEffect(() => {
     if (errorUpvotingRecommendation) {
-      alert("Error upvoting recommendation!");
+      alert('Error upvoting recommendation!')
     }
-  }, [errorUpvotingRecommendation]);
+  }, [errorUpvotingRecommendation])
 
   useEffect(() => {
     if (errorDownvotingRecommendation) {
-      alert("Error downvoting recommendation!");
+      alert('Error downvoting recommendation!')
     }
-
-  }, [errorDownvotingRecommendation]);
+  }, [errorDownvotingRecommendation])
 
   return (
     <Container>
@@ -44,7 +45,7 @@ export default function Recommendation({ name, youtubeLink, score, id, onUpvote 
         <GoArrowDown size="24px" onClick={handleDownvote} />
       </Row>
     </Container>
-  );
+  )
 }
 
 const Container = styled.article`
@@ -55,7 +56,7 @@ const Container = styled.article`
   background-color: rgba(255, 255, 255, .1);
   border-radius: 4px;
   margin-bottom: 15px;
-`;
+`
 
 const Row = styled.div`
   padding: 0 15px;
@@ -63,4 +64,4 @@ const Row = styled.div`
   align-items: center;
   gap: 6px;
   cursor: pointer;
-`;
+`

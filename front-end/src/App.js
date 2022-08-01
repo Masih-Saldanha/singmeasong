@@ -1,26 +1,29 @@
-import { Suspense, lazy, Component } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/display-name */
+import { Suspense, lazy, Component } from 'react'
 import {
   BrowserRouter as Router,
   Routes,
   Route
-} from "react-router-dom";
+} from 'react-router-dom'
 
 const Loading = () => (
   <div>Loading...</div>
-  );
-  
+)
+
 const LazyWrapper = (Component) => (props) => (
   <Suspense fallback={<Loading />}>
     <Component {...props} />
   </Suspense>
 )
 
-const Timeline = LazyWrapper(lazy(() => import("./pages/Timeline")));
-const Home = LazyWrapper(lazy(() => import("./pages/Timeline/Home")));
-const Top = LazyWrapper(lazy(() => import("./pages/Timeline/Top")));
-const Random = LazyWrapper(lazy(() => import("./pages/Timeline/Random")));
+const Timeline = LazyWrapper(lazy(() => import('./pages/Timeline')))
+const Home = LazyWrapper(lazy(() => import('./pages/Timeline/Home')))
+const Top = LazyWrapper(lazy(() => import('./pages/Timeline/Top')))
+const Random = LazyWrapper(lazy(() => import('./pages/Timeline/Random')))
 
-export default function App() {
+export default function App () {
   return (
     <Router>
       <Routes>

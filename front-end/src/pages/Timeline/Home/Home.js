@@ -1,32 +1,33 @@
-import { useEffect } from "react";
+/* eslint-disable react/react-in-jsx-scope */
+import { useEffect } from 'react'
 
-import useRecommendations from "../../../hooks/api/useRecommendations";
-import useCreateRecommendation from "../../../hooks/api/useCreateRecommendation";
+import useRecommendations from '../../../hooks/api/useRecommendations'
+import useCreateRecommendation from '../../../hooks/api/useCreateRecommendation'
 
-import CreateNewRecommendation from "../../../components/CreateNewRecommendation";
-import Recommendation from "../../../components/Recommendation";
+import CreateNewRecommendation from '../../../components/CreateNewRecommendation'
+import Recommendation from '../../../components/Recommendation'
 
-export default function Home() {
-  const { recommendations, loadingRecommendations, listRecommendations } = useRecommendations();
-  const { loadingCreatingRecommendation, createRecommendation, creatingRecommendationError } = useCreateRecommendation();
+export default function Home () {
+  const { recommendations, loadingRecommendations, listRecommendations } = useRecommendations()
+  const { loadingCreatingRecommendation, createRecommendation, creatingRecommendationError } = useCreateRecommendation()
 
   const handleCreateRecommendation = async (recommendation) => {
     await createRecommendation({
       name: recommendation.name,
-      youtubeLink: recommendation.link,
-    });
+      youtubeLink: recommendation.link
+    })
 
-    listRecommendations();
-  };
+    listRecommendations()
+  }
 
   useEffect(() => {
     if (creatingRecommendationError) {
-      alert("Error creating recommendation!");
+      alert('Error creating recommendation!')
     }
-  }, [creatingRecommendationError]);
+  }, [creatingRecommendationError])
 
   if ((loadingRecommendations && !recommendations) || !recommendations) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (

@@ -1,21 +1,23 @@
-import { useState } from "react";
-import styled from "styled-components";
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
+import { useState } from 'react'
+import styled from 'styled-components'
 
-import { IoReturnUpForwardOutline } from "react-icons/io5";
+import { IoReturnUpForwardOutline } from 'react-icons/io5'
 
-export default function CreateNewRecommendation({ onCreateNewRecommendation = () => 0, disabled = false }) {
-  const [name, setName] = useState("");
-  const [link, setLink] = useState("");
+export default function CreateNewRecommendation ({ onCreateNewRecommendation = () => 0, disabled = false }) {
+  const [name, setName] = useState('')
+  const [link, setLink] = useState('')
 
   const handleCreateRecommendation = () => {
     onCreateNewRecommendation({
       name,
       link
-    });
-    setLink("");
-    setName("");
+    })
+    setLink('')
+    setName('')
   }
-  
+
   return (
     <Container>
       <Input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} disabled={disabled} />
@@ -24,14 +26,14 @@ export default function CreateNewRecommendation({ onCreateNewRecommendation = ()
         <IoReturnUpForwardOutline size="24px" color="#fff" />
       </Button>
     </Container>
-  );
+  )
 }
 
 const Container = styled.div`
   display: flex;
   gap: 9px;
   margin-bottom: 15px;
-`;
+`
 
 const Input = styled.input`
   background-color: #fff;
@@ -49,7 +51,7 @@ const Input = styled.input`
   &::placeholder {
     color: #c4c4c4;
   }
-`;
+`
 
 const Button = styled.button`
   background-color: #e90000;
@@ -63,4 +65,4 @@ const Button = styled.button`
   &:disabled {
     opacity: .8;
   }
-`;
+`

@@ -1,18 +1,19 @@
-import recommendationFactory from "../../factories/recommendationFactory.js";
+/* eslint-disable no-undef */
+import recommendationFactory from '../../factories/recommendationFactory.js'
 
-Cypress.Commands.add("resetDB", () => {
-    cy.request("DELETE", `${recommendationFactory.URL_BACK}/reset`).then(() => { });
-});
+Cypress.Commands.add('resetDB', () => {
+  cy.request('DELETE', `${recommendationFactory.URL_BACK}/reset`).then(() => { })
+})
 
-Cypress.Commands.add("seedDB", () => {
-    cy.request("DELETE", `${recommendationFactory.URL_BACK}/reset`).then(() => {
-        cy.request("POST", `${recommendationFactory.URL_BACK}/seed`).then(() => { });
-    });
-});
+Cypress.Commands.add('seedDB', () => {
+  cy.request('DELETE', `${recommendationFactory.URL_BACK}/reset`).then(() => {
+    cy.request('POST', `${recommendationFactory.URL_BACK}/seed`).then(() => { })
+  })
+})
 
-Cypress.Commands.add("seedDBWithoutReset", () => {
-    cy.request("POST", `${recommendationFactory.URL_BACK}/seed`).then(() => { });
-});
+Cypress.Commands.add('seedDBWithoutReset', () => {
+  cy.request('POST', `${recommendationFactory.URL_BACK}/seed`).then(() => { })
+})
 
 // ***********************************************
 // This example commands.js shows you how to

@@ -4,18 +4,17 @@
 import recommendationFactory from '../../../factories/recommendationFactory.js'
 
 describe('Home Screen', () => {
-  it('Should upvote an recommendation', async () => {
+  it('Should add an recommendation', async () => {
     cy.resetDB()
+
     cy.intercept('GET', `${recommendationFactory.URL_BACK}`).as('getRecommendations')
     cy.visit(recommendationFactory.URL_FRONT)
     cy.wait('@getRecommendations')
 
-    const arrNames = []
-    const max = 3
-    for (let i = 0; i < max; i++) {
-      const recommendation = recommendationFactory.createRecommendation()
-      arrNames.push(recommendation.name)
+    const recommendation = recommendationFactory.createRecommendation()
 
+    const inserts = 3
+    for (let i = 0; i < inserts; i++) {
       cy.get('input[placeholder=Name]').type(recommendation.name)
       cy.get("input[placeholder='https://youtu.be/...']").type(recommendation.link)
 
@@ -24,13 +23,12 @@ describe('Home Screen', () => {
       cy.get('button').click()
       cy.wait('@postRecommendation')
       cy.wait('@getNewRecommendations')
-    };
-    cy.log(arrNames)
 
-    cy.visit(`${recommendationFactory.URL_FRONT}/random`)
+      if (i >= 1) {
+        cy.wait('@postRecommendation').its('response.statusCode').should('eq', 409)
+      }
+    }
 
-    cy.get('article div').eq(0).should(($div) => {
-      expect($div.get(0).innerText).to.be.oneOf(arrNames)
-    })
+    cy.get('article div:first').should('contain.text', recommendation.name)
   })
 })
