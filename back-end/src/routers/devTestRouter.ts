@@ -1,12 +1,12 @@
-import { Router } from "express";
+import { Router } from 'express'
 
-import devTestController from "../controllers/devTestController.js";
+import devTestController from '../controllers/devTestController.js'
 
-const devTestRouter = Router();
+const devTestRouter = Router()
 
-if (process.env.NODE_ENV === "test") {
-    devTestRouter.delete("/reset", devTestController.reset);
-    devTestRouter.post("/seed", devTestController.seed);
+if (process.env.NODE_ENV === 'test') {
+  devTestRouter.delete('/reset', devTestController.reset)
+  devTestRouter.post('/seed', devTestController.seed)
 };
 
-export default devTestRouter;
+export default devTestRouter

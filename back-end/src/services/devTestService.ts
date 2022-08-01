@@ -1,16 +1,16 @@
-import devTestRepository from "../repositories/devTestRepository.js";
+import devTestRepository from '../repositories/devTestRepository.js'
 
-async function reset() {
-    await devTestRepository.reset();
+async function reset () {
+  await devTestRepository.reset()
 };
 
-async function seed() {
-    await devTestRepository.seed();
+async function seed () {
+  await devTestRepository.seed()
 };
 
 const devTestService = {
-    reset,
-    seed,   
-};
+  reset,
+  seed
+}
 
-export default devTestService;
+export default devTestService
